@@ -1,0 +1,66 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run format:check
+      - run: npm run lint -- --max-warnings=0
+      - run: npm run typecheck
+      - run: npm test -- --runInBand
+      - run: npm run build
+      - name: Enforce native-only metadata loading
+        run: |
+          ! grep -R -E "fetch\(|XMLHttpRequest|axios|cheerio|jsdom" src
+          ! grep -R -E "URLSession|WKWebView|UIWebView|SwiftSoup|OkHttp|jsoup" ios
+
+  ios:
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        new_arch: ['1', '0']
+    env:
+      RCT_NEW_ARCH_ENABLED: ${{ matrix.new_arch }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run pod:lint
+      - run: npm ci
+        working-directory: example
+      - run: pod install
+        working-directory: example/ios
+      - name: Build iOS example
+        working-directory: example/ios
+        run: >-
+          xcodebuild
+          -workspace LinkPresentationExample.xcworkspace
+          -scheme LinkPresentationExample
+          -configuration Debug
+          -sdk iphonesimulator
+          -destination 'generic/platform=iOS Simulator'
+          CODE_SIGNING_ALLOWED=NO
+          build
+      - name: Run native XCTest suite
+        if: matrix.new_arch == '1'
+        working-directory: example/ios
+        run: |
+          SIMULATOR_ID=$(xcrun simctl list devices available -j | jq -r '[.devices[][] | select(.name | startswith("iPhone"))][0].udid')
+          xcodebuild test \
+            -workspace LinkPresentationExample.xcworkspace \
+            -scheme LinkPresentationExample \
+            -configuration Debug \
+            -destination "platform=iOS Simulator,id=${SIMULATOR_ID}"

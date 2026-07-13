@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" role="img" aria-labelledby="title">
+  <title id="title">React Native</title>
+  <g fill="none" stroke="#61DAFB" stroke-width="4">
+    <ellipse cx="48" cy="48" rx="43" ry="16" />
+    <ellipse cx="48" cy="48" rx="43" ry="16" transform="rotate(60 48 48)" />
+    <ellipse cx="48" cy="48" rx="43" ry="16" transform="rotate(120 48 48)" />
+  </g>
+  <circle cx="48" cy="48" r="7" fill="#61DAFB" />
+</svg>

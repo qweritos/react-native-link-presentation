@@ -1,0 +1,10 @@
+node_modules/
+lib/
+coverage/
+*.xcworkspace
+Pods/
+DerivedData/
+example/ios/build/
+example/ios/Pods/
+example/node_modules/
+.DS_Store

@@ -11,7 +11,7 @@ Pod::Spec.new do |s|
   s.license      = package["license"]
   s.author       = { package["author"]["name"] => package["author"]["email"] }
   s.platforms    = { :ios => "15.1" }
-  s.source       = { :git => repository_url, :tag => "#{s.version}" }
+  s.source       = { :git => repository_url, :tag => "v#{s.version}" }
   s.source_files = "ios/**/*.{h,m,mm,swift}"
   s.exclude_files = "ios/RNLinkPresentationTests/**/*"
   s.frameworks   = "LinkPresentation", "UniformTypeIdentifiers"
